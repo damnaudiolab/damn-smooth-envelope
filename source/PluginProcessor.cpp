@@ -2,6 +2,10 @@
 
 #include "PluginEditor.h"
 
+#ifndef FLT_EPSILON
+#define FLT_EPSILON __FLT_EPSILON__
+#endif
+
 //==============================================================================
 PluginProcessor::PluginProcessor()
   : AudioProcessor(
