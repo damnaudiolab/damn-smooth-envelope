@@ -1,9 +1,13 @@
 #pragma once
 
 #include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_dsp/juce_dsp.h>
+
+#include "BinaryData.h"
+#include "CustomLookAndFeel.h"
 
 #if (MSVC)
-#include "ipps.h"
+    #include "ipps.h"
 #endif
 
 class PluginProcessor : public juce::AudioProcessor
@@ -39,5 +43,9 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
+    float preDeltaMem[2];
+    float divSigmaMem[2];
+    float postSigmaMem[2];
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
 };
