@@ -1,44 +1,55 @@
 #include "PluginEditor.h"
 
-PluginEditor::PluginEditor (PluginProcessor& p)
-    : AudioProcessorEditor (&p), processorRef (p)
+PluginEditor::PluginEditor(PluginProcessor& p,
+                           juce::AudioProcessorValueTreeState& vts)
+  : AudioProcessorEditor(&p)
+  , processorRef(p)
+  , valueTreeState(vts)
 {
-    juce::ignoreUnused (processorRef);
+  juce::ignoreUnused(processorRef);
 
-    //addAndMakeVisible (inspectButton);
+  logo = juce::Drawable::createFromImageData(BinaryData::logo_svg,
+                                             BinaryData::logo_svgSize);
+  logo->setTransformToFit(headerArea.reduced(logoReduce).toFloat(),
+                          juce::RectanglePlacement::centred);
+  addAndMakeVisible(logo.get());
 
-    // this chunk of code instantiates and opens the melatonin inspector
-    /*
-    inspectButton.onClick = [&] {
-        if (!inspector)
-        {
-            inspector = std::make_unique<melatonin::Inspector> (*this);
-            inspector->onClose = [this]() { inspector.reset(); };
-        }
+  setSize(bodyWidth, bodyHeight);
 
-        inspector->setVisible (true);
-    };
-    */
+  addAndMakeVisible(amountSlider);
+  amountSliderAttachment.reset(
+    new SliderAttachment(valueTreeState, "amount", amountSlider));
 
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
+  amountSlider.setSliderStyle(juce::Slider::SliderStyle::RotaryVerticalDrag);
+  amountSlider.setTextBoxStyle(juce::Slider::TextBoxBelow,
+                               false,
+                               amountSliderTextBoxWidth,
+                               amountSliderTextBoxHeight);
+  amountSlider.setNumDecimalPlacesToDisplay(1);
+  amountSlider.setColour(juce::Slider::ColourIds::textBoxOutlineColourId,
+                         juce::Colours::transparentBlack);
+  amountSlider.setBounds(amountSliderArea);
+  // amountSlider.setLookAndFeel(&customLookAndFeel);
 }
 
-PluginEditor::~PluginEditor()
+PluginEditor::~PluginEditor() {}
+
+void
+PluginEditor::paint(juce::Graphics& g)
 {
+  // (Our component is opaque, so we must completely fill the background with a
+  // solid colour)
+  g.fillAll(
+    getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+  g.setColour(customLookAndFeel.colourPalette[CustomLookAndFeel::black]);
+  g.fillRect(headerArea);
 }
 
-void PluginEditor::paint (juce::Graphics& g)
+void
+PluginEditor::resized()
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-}
-
-void PluginEditor::resized()
-{
-    // layout the positions of your child components here
-    auto area = getLocalBounds();
-    area.removeFromBottom (50);
-    //inspectButton.setBounds (getLocalBounds().withSizeKeepingCentre (100, 50));
+  // layout the positions of your child components here
+  auto area = getLocalBounds();
+  area.removeFromBottom(50);
+  // inspectButton.setBounds (getLocalBounds().withSizeKeepingCentre (100, 50));
 }
