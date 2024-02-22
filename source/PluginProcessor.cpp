@@ -24,8 +24,8 @@ PluginProcessor::PluginProcessor()
                  std::make_unique<juce::AudioParameterFloat>(
                    "amount",
                    "Amount",
-                   juce::NormalisableRange<float>(0.f, 100.f, 0.1f),
-                   0.f),
+                   juce::NormalisableRange<float>(0.0f, 100.f, 0.5f),
+                   0.0f),
                })
 {
   amount = parameters.getRawParameterValue("amount");
@@ -183,22 +183,34 @@ PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     for (auto i = 0; i < numSamples; ++i) {
 
+      // set x from inputBuffer[i]
       auto x = inputBuffer[i];
 
-      auto diffAbs = fabsf(x - preDeltaMem[ch]);
-
+      // differentiate x by [alpha = 0.999]
+      auto diff = x - preDeltaMem[ch] * 0.999f;
       preDeltaMem[ch] = x;
 
-      auto divisor =
-        juce::jmax(FLT_EPSILON, diffAbs) + 0.999f * divSigmaMem[ch];
+      // for convinience, take absolute value of diff
+      auto diffAbs = fabsf(diff);
 
+      // get divisor using integrated diffAbs
+      auto divisor = juce::jmax(1.0e-06f, diffAbs) + 0.999f * divSigmaMem[ch];
       divSigmaMem[ch] = divisor;
 
-      auto envelope = 0.9f * postSigmaMem[ch] + 0.1f * diffAbs / divisor;
+      // get envelope using diffAbs, divisor, and own integral
+      // [alpha = 0.9], but input is multiplied by [1 - 0.9 = 0.1]
+      auto envelope = 0.9f * envSigmaMem[ch] + 0.1f * diffAbs / divisor;
+      envSigmaMem[ch] = envelope;
 
-      postSigmaMem[ch] = envelope;
+      // multiply diff by the exponentiated envelope
+      // envelope is pre-multiplied by the double negative of amount
+      // finally, integrate the value by [alpha = 0.999]
+      auto y =
+        diff * expf(*amount * envelope * -2.0f) + postSigmaMem[ch] * 0.999f;
+      postSigmaMem[ch] = y;
 
-      outputBuffer[i] = x * expf(*amount * envelope * -1.f);
+      // set outputBuffer[i] from y
+      outputBuffer[i] = y;
     }
   }
 }

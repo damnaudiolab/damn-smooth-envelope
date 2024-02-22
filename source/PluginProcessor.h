@@ -42,9 +42,10 @@ public:
   void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
-  float preDeltaMem[2] = { 0.f, 0.f };
-  float divSigmaMem[2] = { 0.f, 0.f };
-  float postSigmaMem[2] = { 0.f, 0.f };
+  float preDeltaMem[2] = { 0.0f, 0.0f };
+  float divSigmaMem[2] = { 0.0f, 0.0f };
+  float envSigmaMem[2] = { 0.0f, 0.0f };
+  float postSigmaMem[2] = { 0.0f, 0.0f };
 
   juce::AudioProcessorValueTreeState parameters;
 

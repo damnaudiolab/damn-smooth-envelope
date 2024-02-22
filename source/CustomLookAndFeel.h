@@ -28,8 +28,11 @@ public:
                         float sliderPos,
                         float rotaryStartAngle,
                         float rotaryEndAngle,
-                        juce::Slider&) override
+                        juce::Slider& sliderRef) override
   {
+    auto sliderMin = (float)sliderRef.getMinimum();
+    auto sliderMax = (float)sliderRef.getMaximum();
+    auto sliderCenter = sliderMin / (sliderMin - sliderMax);
     auto toAngle =
       rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
     auto bounds = juce::Rectangle<int>(x, y, width, height).toFloat();
@@ -64,7 +67,8 @@ public:
                            arcRadius,
                            arcRadius,
                            0.0f,
-                           rotaryStartAngle,
+                           rotaryStartAngle +
+                             sliderCenter * (rotaryEndAngle - rotaryStartAngle),
                            toAngle,
                            true);
     g.setColour(valueFillColour);
