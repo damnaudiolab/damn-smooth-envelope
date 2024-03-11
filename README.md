@@ -12,9 +12,9 @@ Warm and soft sounds can be easily made.
 
 Go to [Releases Page](/releases/latest) and download
 
-### Install to
-`C:\Program Files\Common Files\VST3\` (Windows)
-
-or
-
-`~/Library/Audio/Plug-Ins/VST3/` (macOS)
+### Path to Install
+- Windows
+  - `C:\Program Files\Common Files\VST3\`
+- macOS
+  - VST `~/Library/Audio/Plug-Ins/VST3/`
+  - AU `~/Library/Audio/Plug-Ins/Components/`
