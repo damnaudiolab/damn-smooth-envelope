@@ -183,34 +183,29 @@ PluginProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     for (auto i = 0; i < numSamples; ++i) {
 
-      // set x from inputBuffer[i]
       auto x = inputBuffer[i];
 
-      // differentiate x by [alpha = 0.999]
       auto diff = x - preDeltaMem[ch] * 0.999f;
       preDeltaMem[ch] = x;
 
-      // for convinience, take absolute value of diff
       auto diffAbs = fabsf(diff);
 
-      // get divisor using integrated diffAbs
       auto divisor = juce::jmax(1.0e-06f, diffAbs) + 0.999f * divSigmaMem[ch];
       divSigmaMem[ch] = divisor;
 
-      // get envelope using diffAbs, divisor, and own integral
-      // [alpha = 0.9], but input is multiplied by [1 - 0.9 = 0.1]
       auto envelope = 0.9f * envSigmaMem[ch] + 0.1f * diffAbs / divisor;
       envSigmaMem[ch] = envelope;
 
-      // multiply diff by the exponentiated envelope
-      // envelope is pre-multiplied by the double negative of amount
-      // finally, integrate the value by [alpha = 0.999]
       auto y =
         diff * expf(*amount * envelope * -2.0f) + postSigmaMem[ch] * 0.999f;
       postSigmaMem[ch] = y;
 
-      // set outputBuffer[i] from y
-      outputBuffer[i] = y;
+      auto yNoDC =
+        y - dcRemoverMem[ch][DeltaMem] + 0.975f * dcRemoverMem[ch][SigmaMem];
+      dcRemoverMem[ch][DeltaMem] = y;
+      dcRemoverMem[ch][SigmaMem] = yNoDC;
+
+      outputBuffer[i] = yNoDC;
     }
   }
 }

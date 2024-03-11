@@ -10,10 +10,10 @@ Warm and soft sounds can be easily made.
 
 # Installation
 
-Go to [Releases Page](https://github.com/damnaudiolab/damn-smooth-envelope/releases/latest) and download
+Go to [Releases Page](/releases/latest) and download
 
 ### Install to
-`C:\Program Files\Common Files\VST3` (Windows)
+`C:\Program Files\Common Files\VST3\` (Windows)
 
 or
 

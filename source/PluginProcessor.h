@@ -47,6 +47,13 @@ private:
   float envSigmaMem[2] = { 0.0f, 0.0f };
   float postSigmaMem[2] = { 0.0f, 0.0f };
 
+  enum
+  {
+    SigmaMem,
+    DeltaMem
+  };
+  float dcRemoverMem[2][2] = { { 0.0f, 0.0f }, { 0.0f, 0.0f } };
+
   juce::AudioProcessorValueTreeState parameters;
 
   std::atomic<float>* amount = nullptr;
