@@ -10,7 +10,7 @@ Warm and soft sounds can be easily made.
 
 # Installation
 
-Go to [Releases Page](/releases/latest) and download
+Go to [Releases Page](../../releases/latest) and download
 
 ### Path to Install
 - Windows
